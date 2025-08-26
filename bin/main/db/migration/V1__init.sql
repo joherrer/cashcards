@@ -1,0 +1,12 @@
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE cash_cards (
+    id BIGSERIAL PRIMARY KEY,
+    amount NUMERIC(10, 2) NOT NULL,
+    owner VARCHAR(255) NOT NULL
+);

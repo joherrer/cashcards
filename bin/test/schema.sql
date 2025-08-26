@@ -1,0 +1,5 @@
+CREATE TABLE cash_cards (
+    id BIGSERIAL PRIMARY KEY,
+    amount DECIMAL(19,2) NOT NULL,
+    owner VARCHAR(255) NOT NULL
+);
