@@ -23,6 +23,7 @@ Users can create, retrieve, update, or delete cash cards via secure endpoints.
 - Health endpoint with Spring Boot Actuator
 - Unit and integration tests with JUnit
 - Docker and Docker Compose support
+- GitHub Actions CI workflow
 
 ## 🖥 Technology Stack
 
@@ -35,11 +36,15 @@ Users can create, retrieve, update, or delete cash cards via secure endpoints.
 - **Monitoring**: Spring Boot Actuator
 - **Testing**: Spring Boot Test, JUnit, Testcontainers
 - **Containerization**: Docker, Docker Compose
+- **CI/CD**: GitHub Actions
 
 ## 🏗 Project Structure
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── src/
 │   ├── main/
 │   │   ├── java/
