@@ -1,4 +1,4 @@
-# CashCards REST API
+# Cash Cards
 
 ![Java](https://img.shields.io/badge/Java-17-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-✔-green)
@@ -7,25 +7,28 @@
 
 ![Postman Screenshot](assets/postman-request.jpeg)
 
-## 💳 Description
+## 💳 Overview
 
-CashCards is a RESTful API built with Java and Spring Boot that enables users
-to manage cash cards. Each cash card consists of an ID, amount, and owner.
-Users can create, retrieve, update, or delete cash cards via secure endpoints.
+Cash Cards is a secure REST API built with Java and Spring Boot for managing
+digital cash cards. The application allows users to create, retrieve, update,
+and delete cash cards while enforcing authentication and role-based access
+control. Designed for scalability and maintainability, the project integrates
+PostgreSQL, Spring Security, Flyway migrations, Docker, and automated testing
+to provide a production-ready backend service.
 
 ## ✨ Features
 
 - Cash card management with CRUD operations
 - User registration with role-based authorization
 - Spring Security for Basic Authentication
-- PostgreSQL database with JPA/Hibernate
-- Database migrations with Flyway
-- Health endpoint with Spring Boot Actuator
-- Unit and integration tests with JUnit
+- PostgreSQL persistence with JPA/Hibernate
+- Database schema migrations using Flyway
+- Health monitoring with Spring Boot Actuator
+- Unit and integration tests with JUnit & Testcontainers
 - Docker and Docker Compose support
-- GitHub Actions CI workflow
+- Automated CI pipeline with GitHub Actions
 
-## 🖥 Technology Stack
+## 🖥 Tech Stack
 
 - **Framework**: Spring Boot
 - **Build Tool**: Gradle
@@ -34,8 +37,8 @@ Users can create, retrieve, update, or delete cash cards via secure endpoints.
 - **Security**: Spring Security
 - **Migrations**: Flyway
 - **Monitoring**: Spring Boot Actuator
-- **Testing**: Spring Boot Test, JUnit, Testcontainers
-- **Containerization**: Docker, Docker Compose
+- **Testing**: JUnit, Testcontainers
+- **Containerization**: Docker
 - **CI/CD**: GitHub Actions
 
 ## 🏗 Project Structure
@@ -168,7 +171,8 @@ The application container uses the `prod` profile and reads `DB_URL`,
 
 ### Basic Authentication
 
-All protected endpoints require Basic Authentication with a username and password.
+All protected endpoints require Basic Authentication with a username and
+password.
 
 Public endpoints:
 
