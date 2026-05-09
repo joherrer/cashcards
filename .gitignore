@@ -1,7 +1,11 @@
 # Build output
 /build/
+/bin/
 out/
 !gradle/wrapper/gradle-wrapper.jar
+
+# Local tooling
+.github/java-upgrade/
 
 # IDE files (IntelliJ, Eclipse, VS Code)
 .idea/

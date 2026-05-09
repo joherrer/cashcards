@@ -16,6 +16,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/cashcards/**").hasRole("AUTHORISED")
                         .anyRequest().authenticated())

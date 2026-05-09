@@ -3,17 +3,22 @@ package io.github.joherrer.cashcards;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import io.github.joherrer.cashcards.dto.CashCard;
+import io.github.joherrer.cashcards.dto.User;
 import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 import java.math.BigDecimal;
@@ -23,7 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@Testcontainers
 class CashCardApplicationTest {
+
+	@Container
+	@ServiceConnection
+	static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
 	@Autowired
 	TestRestTemplate restTemplate;
@@ -74,6 +84,16 @@ class CashCardApplicationTest {
 		assertThat(id).isNotNull();
 		assertThat(amount).isEqualTo(250.00);
 		assertThat(owner).isEqualTo("sarah1");
+	}
+
+	@Test
+	void shouldRejectCashCardCreationWithoutAnAmount() {
+		CashCard newCashCard = new CashCard(null, null, null);
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.postForEntity("/cashcards", newCashCard, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
 	@Test
@@ -176,6 +196,17 @@ class CashCardApplicationTest {
 	}
 
 	@Test
+	void shouldRejectCashCardUpdateWithANegativeAmount() {
+		CashCard cashCardUpdate = new CashCard(null, new BigDecimal("-19.99"), null);
+		HttpEntity<CashCard> request = new HttpEntity<>(cashCardUpdate);
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("sarah1", "abc123")
+				.exchange("/cashcards/99", HttpMethod.PUT, request, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	void shouldNotUpdateACashCardThatDoesNotExist() {
 		CashCard unknownCard = new CashCard(null, new BigDecimal("19.99"), null);
 		HttpEntity<CashCard> request = new HttpEntity<>(unknownCard);
@@ -228,5 +259,31 @@ class CashCardApplicationTest {
 				.withBasicAuth("kumar2", "xyz789")
 				.getForEntity("/cashcards/102", String.class);
 		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldRegisterANewUnauthorisedUser() {
+		User newUser = new User("maria4", "secret123");
+		ResponseEntity<String> registerResponse = restTemplate
+				.postForEntity("/users/register", newUser, String.class);
+
+		assertThat(registerResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(registerResponse.getBody()).isEqualTo("User registered: maria4");
+
+		ResponseEntity<String> cashCardsResponse = restTemplate
+				.withBasicAuth("maria4", "secret123")
+				.getForEntity("/cashcards", String.class);
+		assertThat(cashCardsResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	void shouldRejectDuplicateUserRegistration() {
+		User existingUser = new User("sarah1", "abc123");
+		ResponseEntity<String> response = restTemplate
+				.postForEntity("/users/register", existingUser, String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getBody()).isEqualTo("Username already exists.");
 	}
 }

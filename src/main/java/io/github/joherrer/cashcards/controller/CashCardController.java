@@ -3,6 +3,7 @@ package io.github.joherrer.cashcards.controller;
 import io.github.joherrer.cashcards.dto.CashCard;
 import io.github.joherrer.cashcards.model.CashCardEntity;
 import io.github.joherrer.cashcards.repository.CashCardRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,19 +21,19 @@ import java.util.List;
 class CashCardController {
     private final CashCardRepository cashCardRepository;
 
-    private CashCardController(CashCardRepository repository) {
+    CashCardController(CashCardRepository repository) {
         this.cashCardRepository = repository;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CashCard> findById(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<CashCard> findById(@PathVariable long id, Principal principal) {
         return cashCardRepository.findByIdAndOwner(id, principal.getName())
                 .map(cashCardEntity -> ResponseEntity.ok(cashCardEntity.toModel()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Void> createCashCard(@RequestBody CashCard cashCard, UriComponentsBuilder ucb, Principal principal) {
+    public ResponseEntity<Void> createCashCard(@Valid @RequestBody CashCard cashCard, UriComponentsBuilder ucb, Principal principal) {
         CashCardEntity cashCardEntity = new CashCardEntity(null, cashCard.amount(), principal.getName());
         CashCardEntity savedCashCardEntity = cashCardRepository.save(cashCardEntity);
         URI location = ucb.path("/cashcards/{id}").buildAndExpand(savedCashCardEntity.getId()).toUri();
@@ -55,7 +56,7 @@ class CashCardController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> putCashCard(@PathVariable Long id, @RequestBody CashCard cashCardUpdate, Principal principal) {
+    public ResponseEntity<Void> putCashCard(@PathVariable long id, @Valid @RequestBody CashCard cashCardUpdate, Principal principal) {
         return cashCardRepository.findByIdAndOwner(id, principal.getName())
                 .map(cashCardEntity -> {
                     CashCardEntity updatedCashCard = new CashCardEntity(cashCardEntity.getId(), cashCardUpdate.amount(), principal.getName());
@@ -66,7 +67,7 @@ class CashCardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCashCard(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<Void> deleteCashCard(@PathVariable long id, Principal principal) {
         return cashCardRepository.findByIdAndOwner(id, principal.getName())
                 .map(cashCardEntity -> {
                     cashCardRepository.deleteById(id);

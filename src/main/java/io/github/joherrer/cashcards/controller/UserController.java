@@ -4,11 +4,9 @@ import io.github.joherrer.cashcards.dto.User;
 import io.github.joherrer.cashcards.model.UserEntity;
 import io.github.joherrer.cashcards.service.CashCardUserDetailsService;
 import jakarta.validation.Valid;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Profile("!test")
 @RestController
 @RequestMapping("/users")
 public class UserController {

@@ -7,6 +7,6 @@ CREATE TABLE users (
 
 CREATE TABLE cash_cards (
     id BIGSERIAL PRIMARY KEY,
-    amount NUMERIC(10, 2) NOT NULL,
-    owner VARCHAR(255) NOT NULL
+    amount NUMERIC(10, 2) NOT NULL CHECK (amount > 0),
+    owner VARCHAR(255) NOT NULL REFERENCES users(username)
 );
